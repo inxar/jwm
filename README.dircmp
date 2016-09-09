@@ -1,0 +1,53 @@
+================================================================
+$Id$
+================================================================
+Homepage: http://www.inxar.org/jwm
+Download: http://www.inxar.org/download
+Contact: pcj@inxar.org
+================================================================
+
+dircmp is a simple utility written in C to compare file timestamps
+between two directories.  It was written specifically to determine
+which .java sourcefiles need to be recompiled by checking if the .java
+file is newer than the corresponding .class classfile.
+
+For example:
+
+#
+# Directory structure of your project
+#
+myproject............Base project directory
+myproject/src........Base sourcefile directory
+myproject/classes....Base classfile directory
+
+#
+# Packages in your project
+#
+com.myorg.mypackage
+com.myorg.mypackage.util
+
+#
+# This command will look in the src and classes trees to check what
+# .java files either have no corresponding classfile OR have a newer
+# timestamp than the classfile.  Files that need to be recompiled will
+# be output to STDOUT as a space-delimited list which can be passed to
+# a javac command.
+#
+$ dircmp \
+ -s myproject/src \
+ -d myproject/classes \
+ -p .java \
+ -q .class \
+ com/myorg/mypackage \
+ com/myorg/mypackage/util
+
+INSTALLATION
+==============================================
+
+The Makefile is not fancy.  You may have to edit it for your setup.
+It will try to compile dircmp.c with gcc and install it into /usr/bin.
+
+$ make
+$ make test
+$ make install
+

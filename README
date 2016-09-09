@@ -1,0 +1,173 @@
+================================================================
+$Id$
+================================================================
+Homepage: http://www.inxar.org/jwm
+Download: http://www.inxar.org/download
+Contact: pcj@inxar.org
+
+INTRODUCTION
+================================================================
+
+"make" is a tool used to build C projects, but can be adapted for Java
+projects as well.  make is generally only found in UNIX environments;
+Java With Make is therefore appropriate only when you know you'll be
+developing in UNIX.  May God have pity on those less fortunate.  If
+this is an issue, Ant (from the Apache Software Foundation) is a good
+cross-platform alternative.  I prefer make for several reasons:
+
+ 1. I'm always developing in a Linux environment.
+ 2. I like the conciseness and brevity of a makefile.
+ 3. Speed.
+
+Make is happiest when all project files reside in a common directory,
+reflecting its C heritage.  Java projects, however, have a nested
+directory structure that parallels the package namespace.  Recursive
+make (calling make within make) is a technique used by developers to
+address nontrivial project directory structure, but tends to be rather
+kludgy.
+
+Java With Make takes a simpler non-recursive approach to classfile
+dependency tracking.  It uses another tool "dircmp" to discover which
+sourcefiles have newer timestamps than their corresponding classfiles,
+passing these filenames to the java compiler.  This implies that you
+have dircmp installed on your machine; it is included in this
+distribution.
+
+INSTALLATION
+================================================================
+
+Read the Makefile in this distribution, then use it to compile and
+install dircmp:
+
+ $ make
+ $ su
+ $ make install
+
+Edit the makefile to use a compiler other than gcc or if you want to
+install in a directory other than /usr/bin.
+
+Once dircmp has been installed, copy the template jwm.Makefile to your
+project and customize at will.  
+
+ $ cp jwm.Makefile ~/dev/foo/superfrob/Makefile
+ $ emacs ~/dev/foo/superfrob/Makefile
+
+An instance of this template Makefile will be placed in
+/usr/share/java by default for future projects.
+
+PROJECT STRUCTURE
+================================================================
+
+This section describes how I like to structure my projects.  Since the
+template Makefile is built to reflect this, knowing my preferences
+will allow you to more rapidly adapt it to your own.
+
+Vendor Name: foo
+Project Name: superfrob
+Version String: 0_0_1
+
+Working Project Layout
+======================
+foo
+|
+`-- superfrob
+    |
+    |-- README...................Introduction && Installation
+    |-- CHANGES..................ChangeLog
+    |-- LICENSE..................User License
+    |
+    |-- bin......................Scripts
+    |-- etc......................Configuration files
+    |
+    |-- docs.....................Documentation 
+    |   `-- api..................API Javadocs
+    |
+    |-- lib......................Jars
+    |   `-- barbaz.jar...........A 3rd party library
+    |
+    |-- classes..................Classfiles generated from src
+    |   `-- org
+    |       `-- foo
+    |           `-- superfrob
+    |               `-- util 
+    |
+    `-- src......................Sourcecode
+        |-- overview.html........Javadoc package overview 
+        `-- org
+            `-- foo
+                `-- superfrob
+                    `-- util 
+
+Distribution Project Layout
+===========================
+foo
+|
+`-- superfrob-0_0_1
+    |
+    |-- README...................Introduction && Installation
+    |-- CHANGES..................ChangeLog
+    |-- LICENSE..................User License
+    |
+    |-- bin......................Scripts
+    |-- etc......................Configuration files
+    |
+    |-- docs.....................Documentation 
+    |   `-- api..................API Javadocs
+    |
+    |-- lib......................Jars
+    |   |-- superfrob.jar........This library jar
+    |   `-- barbaz.jar...........A 3rd party library
+    |
+    `-- src.jar..................Sourcecode jar
+
+NOTES:
+
+ - A project has a vendor name, a project name, and a version number
+   (a major_minor_release triple).  These form a pseudo-namespace.
+ 
+ - A project has a list of packages (e.g. org.foo.superfrob,
+   org.foo.superfrob.util).
+
+ - Sourcefiles go in ./src.  For example, org.foo.superfrob.Main has
+   the sourcefile ./src/org/foo/superfrob/Main.java.
+
+ - Classfiles go in ./classes; it is the destination directory for the
+   compiler.  ./classes may also contain other property files,
+   resources, and other things that will get packaged into a jar.
+
+ - Documentation goes in ./docs.  API documentation (Javadocs) go in
+   ./docs/api.  Other documentation may have subdirectories under
+   ./docs, such as ./docs/manual.  The exception is the README file,
+   which goes in the root project directory.
+
+ - 3rd party libraries (jars) and the distribution classfile jar go in
+   ./lib. Therefore, if an application is distributed with regexp.jar
+   (developed by a different organization), it will be at
+   ./lib/regexp.jar.
+
+ - Scripts and other executables go in ./bin.
+
+ - Configuration files go in ./etc.  Many people like ./conf instead.
+
+ - Temporary things go into ./tmp
+
+ - the project root directory should contain at least a README,
+   LICENSE, and CHANGES (or ChangeLog).
+
+ - A distribution (dist) is archived such that it will expand into the
+   directory "<vendorname>/<projectname>-<version>/".  The dist
+   contains all documentation, scripts, configuration files, and root
+   files (like the README).  Sourcecode is packaged into a src.jar and
+   placed in the root directory.  If the src.jar will create and
+   extract into a ./src directory if jar xvf'd.  Classfiles are
+   packaged into a <projectname>.jar and placed in the ./lib
+   directory.
+
+OTHER REQUIRED TOOLS
+================================================================
+
+To build the distribution, the template Makefile (jwm.Makefile) uses
+the nimble skills of rsync.  If you don't already have rsync on your
+machine, shame on you.
+
+
